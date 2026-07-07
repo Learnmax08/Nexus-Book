@@ -523,7 +523,7 @@
         </nav>
     </div>
 
-   <div id="content-wrapper" style="margin-top: 100px;">
+    <div id="content-wrapper" style="margin-top: 100px;">
         <div class="mb-5">
             
         </div>
@@ -545,11 +545,11 @@
                         </div>
                         <div class="position-relative mb-3 rounded-3 overflow-hidden bg-dark">
                             <img src="images/thumb-4.png" alt="Thumbnail" class="img-fluid w-100 object-fit-cover" style="height: 170px; opacity: 0.85;">
-                            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-2 px-2 py-1 text-warning border border-warning small">7 videos</span>
+                            <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-2 px-2 py-1 text-warning border border-warning small">1 videos</span>
                         </div>
                         <h5 class="card-title fw-bold text-white mb-3 fs-6" style="min-height: 40px;"> ශ්‍රේණි <span id="badge-sheni" class="badge bg-danger ms-2" style="font-size: 0.7rem;">PAID</span></h5>
                         <div id="btn-container-sheni">
-                            <button id="btn-sheni" onclick="requestUnlock('sheni')" class="btn btn-playlist btn-sm w-100 rounded-3 py-2">Enroll Quest</button>
+                            <button id="btn-sheni" onclick="requestUnlock('sheni)" class="btn btn-playlist btn-sm w-100 rounded-3 py-2">Enroll Quest</button>
                     </div>
                 </div>
             </div>
@@ -598,7 +598,7 @@
             </div>
             </div>
 
-            
+           
             <div class="col">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body p-4">
@@ -613,8 +613,8 @@
                             <img src="images/thumb-1.png" alt="Thumbnail" class="img-fluid w-100 object-fit-cover" style="height: 170px; opacity: 0.85;">
                             <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 end-0 m-2 px-2 py-1 text-warning border border-warning small">9 videos</span>
                         </div>
-                        <h5 class="card-title fw-bold text-white mb-3 fs-6" style="min-height: 40px;">ත්‍රිකෝණමيتිය <span class="badge bg-success ms-2" style="font-size: 0.7rem;">FREE</span></h5>
-                        <button onclick="enrollClass('ත්‍රිකෝණමيتිය', 'images/thumb-1.png', '9 videos', 'playlist.html')" class="btn btn-playlist btn-sm w-100 rounded-3 py-2">Enroll Quest</button>
+                        <h5 class="card-title fw-bold text-white mb-3 fs-6" style="min-height: 40px;">ත්‍රිකෝණමිතිය <span class="badge bg-success ms-2" style="font-size: 0.7rem;">FREE</span></h5>
+                        <button onclick="enrollClass('ත්‍රිකෝණමිතිය', 'images/thumb-1.png', '9 videos', 'playlist.html')" class="btn btn-playlist btn-sm w-100 rounded-3 py-2">Enroll Quest</button>
                     </div>
                 </div>
             </div>
@@ -856,7 +856,7 @@
                         }
                     });
 
-                    if (currentStatus === "Pending" || currentStatus === "pending") {
+                    if (currentStatus === "Pending") {
                         if(badge) { badge.className = "badge bg-warning text-dark ms-2"; badge.innerText = "PENDING"; }
                         container.innerHTML = `<button class="btn btn-playlist btn-sm w-100 rounded-3 py-2" disabled>Pending Approval...</button>`;
                     } else if (currentStatus === "Approved" || currentStatus === "approved") {
@@ -869,14 +869,14 @@
                 });
         }
 
-        // Paid Classes සජීවීව පරීක්ෂා කිරීම ආරම්භය
+        // සීමාව (Paid Class) සජීවීව පරීක්ෂා කිරීම ආරම්භය
         listenToCourseStatus('සීමාව', 'playlist -2.html', 'images/thumb-3.png', '4 videos');
-        listenToCourseStatus('අවකලනය', 'playlist -3.html', 'images/thumb-3.png', '6 videos');
-        listenToCourseStatus('sheni', 'playlist -12.html', 'images/thumb-3.png', '1 videos');
-        // දෛශික පාඩම සජීවීව පරීක්ෂා කිරීම මෙතනට එකතු කලා
-        listenToCourseStatus('දෛශික', 'playlist -7.html', 'images/thumb-7.png', '7 videos');
+         listenToCourseStatus('අවකලනය', 'playlist -3.html', 'images/thumb-3.png', '8 videos');
+         listenToCourseStatus('sheni', 'playlist -12.html', 'images/thumb-3.png', '1 videos');
+        listenToCourseStatus('දෛශික', 'playlist -7.html', 'images/thumb-3.png', '7 videos');
 
          function enrollClass(className, thumbImg, videoCount, playlistUrl) {
+    // 👑 ඉංග්‍රීසි නම සිංහල නම බවට හරවන කොටස (Alert එකේ පෙන්වන්න විතරක්)
     let displayTitle = className;
     if (className === 'shreni' || className === 'sheni') {
         displayTitle = 'ශ්‍රේණි';
@@ -884,8 +884,6 @@
         displayTitle = 'සීමාව';
     } else if (className === 'අවකලනය') {
         displayTitle = 'අවකලනය';
-    } else if (className === 'දෛශික') {
-        displayTitle = 'දෛශික';
     }
 
     let enrolledClasses = JSON.parse(localStorage.getItem('enrolledClasses')) || [];
@@ -911,6 +909,7 @@
             confirmButtonColor: '#00e676'
         });
     } else {
+        // 🎯 ඔන්න ඔයාට පරණ විදිහට 'sheni' කියලා පෙනුන Alert එක ලස්සනට සිංහලෙන් වදින තැන:
         Swal.fire({
             title: 'Info',
             text: `'${displayTitle}' දැනටමත් My Classes වලට එකතු කරලා තියෙන්නේ!`,
@@ -923,17 +922,17 @@
 }
 
         function requestUnlock(className) {
+    // ඉංග්‍රීසි නම සිංහල නම බවට හරවන කොටස 
     let displayTitle = className;
     if (className === 'sheni') displayTitle = 'ශ්‍රේණි';
     if (className === 'සීමාව') displayTitle = 'සීමාව';
     if (className === 'අවකලනය') displayTitle = 'අවකලනය';
-    if (className === 'දෛශික') displayTitle = 'දෛශික';
 
     Swal.fire({
         title: `Course Fee: Rs. 200`,
         html: `
             <div style="text-align: left; font-size: 0.95rem; line-height: 1.5;">
-                <p>මෙම <b>'${displayTitle}'</b> පාඩම Unlock කරගැනීම සඳහා <b>Ez Cash</b> මඟින් <b>Rs. 200</b> ක මුදලක් ගෙවා, එහි رිසිට්පත (Receipt) පහත Telegram link එක හරහා Admin වෙත යොමු කරන්න.</p>
+                <p>මෙම <b>'${displayTitle}'</b> පාඩම Unlock කරගැනීම සඳහා <b>Ez Cash</b> මඟින් <b>Rs. 200</b> ක මුදලක් ගෙවා, එහි රිසිට්පත (Receipt) පහත Telegram link එක හරහා Admin වෙත යොමු කරන්න.</p>
                 <div style="background: #22272e; padding: 10px; border-radius: 8px; border: 1px solid #444; margin-bottom: 15px;">
                     <span style="color: #00e676; font-weight: bold;">💸 Ez Cash Number:</span> 
                     <span style="font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">07XXXXXXXX</span>
@@ -958,7 +957,7 @@
             const requestRef = database.ref('unlock_requests').push();
             requestRef.set({
                 studentName: student_id,
-                requestedClass: className, 
+                requestedClass: className, // Firebase එකට යන්නේ 'shreni' කියලා (ඒක Admin panel එකට ලේසියි)
                 status: "Pending",
                 timestamp: new Date().toLocaleString()
             }).then(() => {
@@ -977,12 +976,14 @@
          // 🛡️ Right-Click බ්ලොක් කිරීම
 document.addEventListener('contextmenu', event => event.preventDefault());
 
-// 🛡️ Keyboard Shortcuts බ්ලොක් කිරීම
+// 🛡️ Keyboard Shortcuts (F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J) බ්ලොක් කිරීම
 document.addEventListener('keydown', function (e) {
+    // F12 බ්ලොක් කිරීම
     if (e.key === "F12") {
         e.preventDefault();
         return false;
     }
+    // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+Shift+C බ්ලොක් කිරීම
     if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C'))) {
         e.preventDefault();
         return false;
