@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusPlatform | Authentication</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Lottie Player Component -->
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+    
+    <!-- SweetAlert2 Theme Dark -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css">
+    <!-- Animate.css for SweetAlert Animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #021a12;
+            overflow-x: hidden;
+            position: relative;
+            user-select: none;
+            padding: 20px 10px;
+        }
+
+        /* Ambient Cyan Background Blobs */
+        .blob-1 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: #00ffc3;
+            top: -150px;
+            left: -150px;
+            filter: blur(120px);
+            opacity: 0.15;
+            border-radius: 50%;
+        }
+
+        .blob-2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: #00c3a0;
+            bottom: -100px;
+            right: -100px;
+            filter: blur(100px);
+            opacity: 0.15;
+            border-radius: 50%;
+        }
+
+        /* Main Outer Glass Container */
+        .main-frame {
+            background: rgba(4, 30, 22, 0.6);
+            border: 1px solid rgba(0, 255, 195, 0.2);
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            z-index: 10;
+            width: 100%;
+            max-width: 890px;
+        }
+
+        .card {
+            display: flex;
+            width: 100%;
+            min-height: 520px;
+            background: rgba(10, 20, 18, 0.4);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- LEFT PANEL (LAMP & MASCOT) --- */
+        .leftPanel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 20px;
+            min-height: 380px;
+        }
+
+        /* 3D Pendant Lamp */
+        .pendant-lamp {
+            position: absolute;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+            transform-origin: top center;
+        }
+
+        .pendant-lamp.swing {
+            animation: lampSwing 2s cubic-bezier(0.36, 0, 0.66, 1);
+        }
+
+        @keyframes lampSwing {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(12deg); }
+            30% { transform: rotate(-9deg); }
+            45% { transform: rotate(6deg); }
+            60% { transform: rotate(-3deg); }
+            75% { transform: rotate(1deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .lamp-cord {
+            width: 4px;
+            height: 50px;
+            background: linear-gradient(90deg, #111 0%, #334e45 40%, #00ffc3 50%, #111 100%);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+            transition: height 0.3s ease;
+        }
+
+        .lamp-cap {
+            width: 24px;
+            height: 10px;
+            background: linear-gradient(90deg, #0a1412 0%, #00ffc3 50%, #021a12 100%);
+            border-radius: 4px 4px 1px 1px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .lamp-head {
+            width: 140px;
+            height: 70px;
+            background: linear-gradient(135deg, #0f2b23 0%, #041812 50%, #010d09 100%);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+            position: relative;
+            border-bottom: 2px solid rgba(0, 255, 195, 0.4);
+            filter: drop-shadow(0px 10px 12px rgba(0,0,0,0.7));
+        }
+
+        .lamp-head::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            width: 20%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-15deg);
+        }
+
+        .lamp-rim {
+            width: 140px;
+            height: 12px;
+            background: linear-gradient(180deg, #0d382c 0%, #010a07 100%);
+            border-radius: 50%;
+            margin-top: -6px;
+            border: 1px solid rgba(0, 255, 195, 0.3);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.8);
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lamp-bulb {
+            width: 45px;
+            height: 14px;
+            background: radial-gradient(circle, #e6ffff 20%, #80ffe5 60%, #00b386 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pull-string {
+            position: absolute;
+            top: 122px;
+            right: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.15s ease-out;
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        .string-chain {
+            width: 3px;
+            height: 75px;
+            background: repeating-linear-gradient(
+                180deg,
+                #00ffc3 0px,
+                #00ffc3 4px,
+                transparent 4px,
+                transparent 7px
+            );
+            filter: drop-shadow(0px 0px 2px rgba(0,255,195,0.8));
+            transition: height 0.3s ease;
+        }
+
+        .string-knob {
+            width: 12px;
+            height: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #00ffc3 40%, #005540 100%);
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 10px rgba(0,255,195,0.5), inset 0 2px 2px rgba(255,255,255,0.8);
+            margin-top: -2px;
+        }
+
+        .pendant-lamp:active .pull-string {
+            transform: translateY(18px);
+        }
+
+        .light-cone {
+            position: absolute;
+            top: 120px;
+            width: 310px;
+            height: 380px;
+            background: linear-gradient(180deg, rgba(0, 255, 195, 0.45) 0%, rgba(0, 255, 195, 0.08) 65%, transparent 100%);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            filter: blur(1px);
+        }
+
+        .mascot-avatar {
+            width: 340px;
+            height: 340px;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.3;
+            filter: blur(2px);
+            transition: all 0.5s ease;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* --- RIGHT PANEL (FORM CONTAINER) --- */
+        .rightPanel {
+            flex: 1.2;
+            padding: 40px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #fff;
+            opacity: 0.2;
+            filter: blur(2px);
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .rightPanel h2 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .rightPanel h2 span {
+            color: #00ffc3;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #88a098;
+            margin-bottom: 20px;
+            margin-top: 4px;
+        }
+
+        .input-box {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .input-box label {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: #7a9c92;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00c49a;
+            font-size: 14px;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 11px 12px 11px 40px;
+            background: rgba(2, 26, 18, 0.7);
+            border: 1px solid rgba(0, 255, 195, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .input-field input:focus {
+            border-color: #00ffc3;
+            box-shadow: 0 0 10px rgba(0, 255, 195, 0.3);
+        }
+
+        .btn-sign {
+            width: 100%;
+            padding: 12px;
+            background: #00ffc3;
+            border: none;
+            border-radius: 8px;
+            color: #021a12;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0, 255, 195, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-sign:hover {
+            background: #00c49a;
+            box-shadow: 0 4px 20px rgba(0, 255, 195, 0.6);
+        }
+
+        .signup-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 12px;
+            color: #6a8c82;
+        }
+
+        /* Form Visibility Logic */
+        .form-pane {
+            display: none;
+        }
+        .form-pane.active {
+            display: block;
+        }
+
+        /* --- LIGHT ON STATE EFFECTS --- */
+        body.light-on .light-cone {
+            opacity: 1;
+        }
+
+        body.light-on .lamp-bulb {
+            background: #ffffff;
+            box-shadow: 
+                0 0 15px #00ffc3, 
+                0 0 30px #00ffc3, 
+                0 0 50px #00ffc3,
+                inset 0 0 8px #ffffff;
+        }
+
+        body.light-on .lamp-rim {
+            border-color: #00ffc3;
+            box-shadow: 0 4px 15px rgba(0, 255, 195, 0.6);
+        }
+
+        body.light-on .mascot-avatar {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        body.light-on .rightPanel {
+            opacity: 1;
+            filter: blur(0);
+            pointer-events: auto;
+        }
+
+        /* =================================================== */
+        /* 🔥 ADVANCED LIQUID GLOWING BORDER FOR SWEETALERT 🔥 */
+        /* =================================================== */
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .swal2-popup.custom-liquid-alert {
+            background: #041812 !important;
+            border-radius: 24px !important;
+            padding: 25px !important;
+            position: relative !important;
+            overflow: visible !important;
+            box-shadow: 0 0 40px rgba(0, 255, 195, 0.25) !important;
+            backdrop-filter: blur(15px);
+            max-width: 90% !important;
+        }
+
+        .swal2-popup.custom-liquid-alert::before, 
+        .swal2-popup.custom-liquid-alert::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 26px;
+            background: conic-gradient(from var(--angle), #00ffc3, #005540, #00ffc3, #021a12, #00ffc3);
+            animation: spinBorder 8s linear infinite; 
+            z-index: -1;
+        }
+
+        .swal2-popup.custom-liquid-alert::after {
+            filter: blur(15px);
+            opacity: 0.7;
+        }
+
+        @keyframes spinBorder {
+            0% { --angle: 0deg; }
+            100% { --angle: 360deg; }
+        }
+
+        /* Alert Inside Layout */
+        .swal-mini-robot {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 10px auto;
+        }
+
+        .swal-custom-title {
+            color: #00ffc3 !important;
+            font-size: 36px !important;
+            font-weight: 700 !important;
+            margin-bottom: 8px !important;
+            text-shadow: 0 0 10px rgba(0, 255, 195, 0.4);
+        }
+
+        .swal-custom-text {
+            color: #e0f2fe !important;
+            font-size: 20px !important;
+            line-height: 1.5 !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #5de4e4, #54ffe8) !important;
+            color: #021a12 !important;
+            font-weight: 800 !important;
+            border-radius: 10px !important;
+            padding: 10px 30px !important;
+            box-shadow: 0 0 15px rgba(205, 223, 218, 0.4) !important;
+        }
+
+        /* =================================================== */
+        /* 📱 RESPONSIVE MEDIA QUERIES (FIXED FOR MOBILE) 📱 */
+        /* =================================================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .blob-1 {
+                width: 250px;
+                height: 250px;
+                top: -80px;
+                left: -80px;
+            }
+
+            .blob-2 {
+                width: 220px;
+                height: 220px;
+                bottom: -50px;
+                right: -50px;
+            }
+
+            .main-frame {
+                padding: 12px;
+                border-radius: 20px;
+            }
+
+            .card {
+                flex-direction: column;
+                height: auto;
+                border-radius: 16px;
+            }
+
+            /* FIX FOR LAMP OVERLAPPING ROBOT ON MOBILE */
+            .leftPanel {
+                min-height: 350px;
+                padding-bottom: 15px;
+                justify-content: flex-end;
+            }
+
+            .lamp-cord {
+                height: 20px; /* Shortened cord on mobile */
+            }
+
+            .string-chain {
+                height: 45px; /* Shortened string on mobile */
+            }
+
+            .pull-string {
+                top: 92px;
+            }
+
+            .light-cone {
+                top: 90px;
+                width: 240px;
+                height: 260px;
+            }
+
+            .mascot-avatar {
+                width: 210px;
+                height: 210px;
+                margin-top: 100px; /* Pushes robot cleanly below the lamp */
+            }
+
+            .rightPanel {
+                padding: 25px 20px;
+            }
+
+            .rightPanel h2 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .subtitle {
+                text-align: center;
+                margin-bottom: 16px;
+            }
+
+            .swal-mini-robot {
+                width: 180px;
+                height: 180px;
+            }
+
+            .swal-custom-title {
+                font-size: 26px !important;
+            }
+
+            .swal-custom-text {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+
+    <div class="main-frame">
+        <div class="card">
+            
+            <!-- Left Side Panel (Pendant Lamp + Mascot) -->
+            <div class="leftPanel">
+                <div class="pendant-lamp" id="lampSwitch">
+                    <div class="lamp-cord"></div>
+                    <div class="lamp-cap"></div>
+                    <div class="lamp-head"></div>
+                    <div class="lamp-rim">
+                        <div class="lamp-bulb"></div>
+                    </div>
+
+                    <div class="pull-string">
+                        <div class="string-chain"></div>
+                        <div class="string-knob"></div>
+                    </div>
+
+                    <div class="light-cone"></div>
+                </div>
+
+                <div class="mascot-avatar">
+                    <dotlottie-player 
+                        src="robot.json" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 100%; height: 100%;" 
+                        loop 
+                        autoplay>
+                    </dotlottie-player>
+                </div>
+            </div>
+
+            <!-- Right Side Panel (Dynamic Forms) -->
+            <div class="rightPanel">
+                
+                <!-- LOGIN FORM -->
+                <div id="login-pane" class="form-pane active">
+                    <h2>Welcome <span>Nexus Platform</span></h2>
+                    <p class="subtitle">Pull the chain or click the lamp to illuminate</p>
+
+                    <form id="login-form">
+                        <div class="input-box">
+                            <label>EMAIL ADDRESS</label>
+                            <div class="input-field">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="login-email" placeholder="Enter Email" required>
+                            </div>
+                        </div>
+
+                        <div class="input-box">
+                            <label>PASSWORD</label>
+                            <div class="input-field">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="login-password" placeholder="Enter Password" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-sign">
+                            LAUNCH PLATFORM <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- REGISTER FORM -->
+                <div id="register-pane" class="form-pane">
+                    <h2>Create <span>Account</span></h2>
+                    <p class="subtitle">Join Nexus Platform core system today</p>
+
+                    <form id="register-form">
+                        <div class="input-box">
+                            <label>FULL NAME</label>
+                            <div class="input-field">
+                                <i class="fa-regular fa-user"></i>
+                                <input type="text" id="reg-name" placeholder="Full Name" required>
+                            </div>
+                        </div>
+
+                        <div class="input-box">
+                            <label>EMAIL ADDRESS</label>
+                            <div class="input-field">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="reg-email" placeholder="Email Address" required>
+                            </div>
+                        </div>
+
+                        <div class="input-box">
+                            <label>CREATE PASSWORD</label>
+                            <div class="input-field">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="reg-password" placeholder="Min 6 characters" minlength="6" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-sign">
+                            CREATE ACCOUNT <i class="fa-solid fa-user-plus"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <p class="signup-text" id="toggleContainer">
+                    Don't have an account? <a href="#" class="toggleAuthLink" style="color:#00ffc3; text-decoration:none; font-weight: bold;">Sign up</a>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Lamp Sound & Animation JS -->
+    <script>
+        const lampSwitch = document.getElementById('lampSwitch');
+        const body = document.body;
+        const clickSound = new Audio('https://www.soundjay.com/buttons/sounds/button-30.mp3');
+
+        // Toggle Light & Swing Animation
+        lampSwitch.addEventListener('click', () => {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(e => console.log("Audio block fixed"));
+
+            body.classList.toggle('light-on');
+
+            lampSwitch.classList.remove('swing');
+            void lampSwitch.offsetWidth; // Reflow trigger
+            lampSwitch.classList.add('swing');
+        });
+
+        // Toggle Sign In / Sign Up Forms dynamically
+        const loginPane = document.getElementById('login-pane');
+        const registerPane = document.getElementById('register-pane');
+        const toggleContainer = document.getElementById('toggleContainer');
+
+        let isSignUp = false;
+
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('toggleAuthLink')) {
+                e.preventDefault();
+                isSignUp = !isSignUp;
+
+                if (isSignUp) {
+                    loginPane.classList.remove('active');
+                    registerPane.classList.add('active');
+                    toggleContainer.innerHTML = 'Already have an account? <a href="#" class="toggleAuthLink" style="color:#00ffc3; text-decoration:none; font-weight: bold;"><i class="fa-solid fa-arrow-left"></i> Back to Sign in</a>';
+                } else {
+                    registerPane.classList.remove('active');
+                    loginPane.classList.add('active');
+                    toggleContainer.innerHTML = 'Don\'t have an account? <a href="#" class="toggleAuthLink" style="color:#00ffc3; text-decoration:none; font-weight: bold;">Sign up</a>';
+                }
+            }
+        });
+    </script>
+
+    <!-- Firebase Auth & Firestore Functionality -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmciwmEbSDgA5PhCY12a_vKqXl4GDBeZ8",
+            authDomain: "school-project-5fe93.firebaseapp.com",
+            projectId: "school-project-5fe93",
+            storageBucket: "school-project-5fe93.firebasestorage.app",
+            messagingSenderId: "548925209782",
+            appId: "1:548925209782:web:cea0aac7d41a510b2fba17",
+            measurementId: "G-5MG8T54708"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // 🤖 ADVANCED CUSTOM LIQUID ALERT HELPER WITH MINI ANIMATED ROBOT
+        function showCustomAlert({ title, text, anim = 'animate__backInDown', isLoading = false }) {
+            return Swal.fire({
+                html: `
+                    <div class="swal-mini-robot">
+                        <dotlottie-player 
+                            src="robot.json" 
+                            background="transparent" 
+                            speed="1" 
+                            style="width: 100%; height: 100%;" 
+                            loop 
+                            autoplay>
+                        </dotlottie-player>
+                    </div>
+                    <div class="swal-custom-title">${title}</div>
+                    <div class="swal-custom-text">${text}</div>
+                `,
+                customClass: {
+                    popup: 'custom-liquid-alert'
+                },
+                showConfirmButton: !isLoading,
+                confirmButtonText: 'CONTINUE',
+                allowOutsideClick: !isLoading,
+                showClass: {
+                    popup: `animate__animated ${anim}`
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__zoomOut'
+                },
+                didOpen: () => {
+                    if (isLoading) Swal.showLoading();
+                }
+            });
+        }
+
+        // 🔔 PUSHBULLET NOTIFICATION
+        function sendAdminApprovalNotification(studentName, studentEmail) {
+            const accessToken = "o.WTmLtrQfGjkrt6BqOCHu2nIjgXD4f6sP"; 
+            const title = "🚨 New User Registered (Auto-Approved)";
+            const body = `Student '${studentName}' (${studentEmail}) has registered and was auto-approved. Check admin panel if you wish to manage or disable access.`;
+
+            fetch("https://api.pushbullet.com/v2/pushes", {
+                method: "POST",
+                headers: {
+                    "Access-Token": accessToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    type: "note",
+                    title: title,
+                    body: body
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log("Pushbullet Notification Sent:", data))
+            .catch(error => console.error("Pushbullet Error:", error));
+        }
+
+        // LOGIN HANDLER
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            showCustomAlert({
+                title: 'Verifying...',
+                text: 'Connecting to Nexus Core System...',
+                anim: 'animate__pulse',
+                isLoading: true
+            });
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        
+                        if (userData.status === "approved") {
+                            localStorage.setItem("student_id", user.uid);
+                            localStorage.setItem("student_name", userData.name || "User");
+                            localStorage.setItem("student_avatar", "https://cdn.cmwithmn.lk/web-data/Static/assets/img/avatars/avatar1.png");
+                            
+                            showCustomAlert({
+                                title: 'Access Granted!',
+                                text: 'Welcome back to the Nexus platform!',
+                                anim: 'animate__zoomIn'
+                            }).then(() => { window.location.href = 'dashboard.html'; });
+                        } else {
+                            await signOut(auth);
+                            showCustomAlert({
+                                title: 'Access Denied!',
+                                text: 'ඔබගේ ගිණුම Admin විසින් අත්හිටුවා (Disable/Pending) ඇත. කරුණාකර Admin හා සම්බන්ධ වන්න.',
+                                anim: 'animate__shakeX'
+                            });
+                        }
+                    } else {
+                        showCustomAlert({ 
+                            title: 'Error', 
+                            text: 'පරිශීලක දත්ත පද්ධතියේ හමුනොවුණි.', 
+                            anim: 'animate__shakeX' 
+                        });
+                    }
+                })
+                .catch((error) => {
+                    let msg = "Email හෝ Password වැරදියි!";
+                    if(error.code === 'auth/invalid-credential') msg = "ඇතුළත් කළ තොරතුරු පද්ධතියේ නොමැත.";
+                    showCustomAlert({ 
+                        title: 'Denied!', 
+                        text: msg, 
+                        anim: 'animate__shakeX' 
+                    });
+                });
+        });
+
+        // REGISTER HANDLER (ADVANCED LIQUID ALERT TRIGGER)
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+
+            showCustomAlert({
+                title: 'Creating Account...',
+                text: 'Deploying new user data to Nexus Core...',
+                anim: 'animate__pulse',
+                isLoading: true
+            });
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    updateProfile(user, { displayName: name }).then(async () => {
+                        
+                        // 1. Firebase Firestore Save
+                        await setDoc(doc(db, "users", user.uid), {
+                            uid: user.uid,
+                            name: name,
+                            email: email,
+                            status: "approved",
+                            createdAt: new Date().toISOString()
+                        });
+                        
+                        // 2. Admin Pushbullet Alert
+                        sendAdminApprovalNotification(name, email);
+
+                        // 3. Save details to LocalStorage
+                        localStorage.setItem("student_id", user.uid);
+                        localStorage.setItem("student_name", name);
+                        localStorage.setItem("student_avatar", "https://cdn.cmwithmn.lk/web-data/Static/assets/img/avatars/avatar1.png");
+
+                        // 4. Show Animated Custom Liquid Alert & Redirect
+                        showCustomAlert({
+                            title: 'Account Created!',
+                            text: 'ගිණුම සාර්ථකව සෑදුවා! සාදරයෙන් පිළිගනිමු.',
+                            anim: 'animate__backInDown'
+                        }).then(() => { 
+                            window.location.href = 'dashboard.html'; 
+                        });
+                    });
+                })
+                .catch((error) => {
+                    let msg = "ගිණුම සෑදීමට නොහැකි වුණා.";
+                    if (error.code === 'auth/email-already-in-use') {
+                        msg = "මෙම Email ලිපිනය දැනටමත් වෙනත් ගිණුමකට පාවිච්චි කර ඇත.";
+                    } else if (error.code === 'auth/weak-password') {
+                        msg = "Password එක අවම වශයෙන් අකුරු/ඉලක්කම් 6ක් විය යුතුය.";
+                    }
+                    showCustomAlert({ 
+                        title: 'Registration Failed', 
+                        text: msg, 
+                        anim: 'animate__shakeX' 
+                    });
+                });
+        });
+
+        // Security Blockers (Right click & Inspect Shortcuts)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function (e) {
+            if (e.key === "F12") {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C'))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
